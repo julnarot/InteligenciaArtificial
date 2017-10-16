@@ -1,4 +1,4 @@
-package ab_informada;
+package ab_no_informada;
 
 import java.util.List;
 
