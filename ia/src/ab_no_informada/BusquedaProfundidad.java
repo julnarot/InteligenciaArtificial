@@ -2,20 +2,20 @@ package ab_no_informada;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Stack;
 
-public class BusquedaAmplitud {
-    //public int[] mejor_solucion = {};
-    ArrayList<Nodo> mejor_solucion = new ArrayList<Nodo>();
-    public Nodo AlIterativo(int[] estado_inicial, int[] solucion) {
+public class BusquedaProfundidad {
+    public Nodo metodo_iterativo(int[] estado_inicial, int[] solucion) {
         boolean solucionado=false;
-        ArrayList<Nodo> nodos_no_expandidos = new ArrayList<Nodo>();
+        Stack<Nodo> nodos_no_expandidos=new Stack<Nodo>();
+        ArrayList<int[]> visitados = new ArrayList<int[]>();
         Nodo nodoInicial=new Nodo(); //creamos el objeto nodo inicial
         nodoInicial.setDatos(estado_inicial); //Ponemos el array al nodo inicial
-        nodos_no_expandidos.add(nodoInicial); //POner el nodo inicial a la PILA
+        nodos_no_expandidos.push(nodoInicial); //POner el nodo inicial a la PILA
 
         while(!solucionado){
-            Nodo nodo=nodos_no_expandidos.get(0);
-            nodos_no_expandidos.remove(0);
+            Nodo nodo=nodos_no_expandidos.pop();
+            visitados.add(nodo.getDatos());
 
             if(Arrays.equals(nodo.getDatos(), solucion)){
                 solucionado=true;
@@ -33,31 +33,36 @@ public class BusquedaAmplitud {
                 hijoIzquierdo.setDatos(datoi); //ponemos los arrays a los nodos
                 hijoCentral.setDatos(datoc);
                 hijoDerecho.setDatos(datod);
+                if(!contiene(visitados, datoi))
+                    nodos_no_expandidos.push(hijoIzquierdo); //ponemos los nodos a la pila
 
-                nodos_no_expandidos.add(hijoIzquierdo); //ponemos los nodos a la pila
-                nodos_no_expandidos.add(hijoCentral);
-                nodos_no_expandidos.add(hijoDerecho);
+                if(!contiene(visitados, datoc))
+                    nodos_no_expandidos.push(hijoCentral);
+
+                if(!contiene(visitados, datod))
+                    nodos_no_expandidos.push(hijoDerecho);
 
                 ArrayList<Nodo> nhijos = new ArrayList<Nodo>();
-
                 nhijos.add(hijoIzquierdo);
                 nhijos.add(hijoCentral);
                 nhijos.add(hijoDerecho);
                 nodo.setHijos(nhijos);
+
 
             }
         }
         return null;
     }
 
-    public Nodo AlRecursivo(Nodo nodo_inicial, int[] solucion, ArrayList visitados) {
-
+    public Nodo metodo_recursivo(Nodo nodo_inicial, int[] solucion, ArrayList visitados) {
+        Stack<Nodo> nodos_no_expandidos=new Stack<Nodo>();
         visitados.add(nodo_inicial.getDatos());
-
-        if(Arrays.equals(nodo_inicial.getDatos(), solucion)){
-            return nodo_inicial;
+        nodos_no_expandidos.push(nodo_inicial);
+        Nodo nodo=nodos_no_expandidos.pop();
+        if(Arrays.equals(nodo.getDatos(), solucion)){
+            return nodo;
         }else{
-            int data[]=nodo_inicial.getDatos(); //Sacando el contenido del nodo
+            int data[]=nodo.getDatos(); //Sacando el contenido del nodo
             int datoi[]={data[1],data[0],data[2],data[3]}; //Intermcabio Izquierda
             int datoc[]={data[0],data[2],data[1],data[3]}; //Intercambio al centro
             int datod[]={data[0],data[1],data[3],data[2]}; //Intercambio a la derecha
@@ -69,6 +74,15 @@ public class BusquedaAmplitud {
             hijoIzquierdo.setDatos(datoi); //ponemos los arrays a los nodos
             hijoCentral.setDatos(datoc);
             hijoDerecho.setDatos(datod);
+
+            if(!contiene(visitados, datoi))
+                nodos_no_expandidos.push(hijoIzquierdo); //ponemos los nodos a la pila
+
+            if(!contiene(visitados, datoc))
+                nodos_no_expandidos.push(hijoCentral);
+
+            if(!contiene(visitados, datod))
+                nodos_no_expandidos.push(hijoDerecho);
 
             ArrayList<Nodo> nhijos=new ArrayList<Nodo>();
             nhijos.add(hijoIzquierdo);
@@ -78,7 +92,7 @@ public class BusquedaAmplitud {
 
             for(Nodo nodoHijo: nodo_inicial.getHijos()){
                 if(!contiene(visitados,nodoHijo.getDatos())){
-                    Nodo sol = AlRecursivo(nodoHijo,solucion,visitados);
+                    Nodo sol = metodo_recursivo(nodoHijo,solucion,visitados);
                     if(sol!=null){
                         return sol;
                     }
@@ -87,14 +101,15 @@ public class BusquedaAmplitud {
             return null;
         }
     }
-    public Nodo AlRecursivo_h(Nodo nodo_inicial, int[] solucion, ArrayList visitados) {
-
+    public Nodo metodo_recursivo_h(Nodo nodo_inicial, int[] solucion, ArrayList visitados) {
+        Stack<Nodo> nodos_no_expandidos=new Stack<Nodo>();
         visitados.add(nodo_inicial.getDatos());
-
-        if(Arrays.equals(nodo_inicial.getDatos(), solucion)){
-            return nodo_inicial;
+        nodos_no_expandidos.push(nodo_inicial);
+        Nodo nodo=nodos_no_expandidos.pop();
+        if(Arrays.equals(nodo.getDatos(), solucion)){
+            return nodo;
         }else{
-            int data[]=nodo_inicial.getDatos(); //Sacando el contenido del nodo
+            int data[]=nodo.getDatos(); //Sacando el contenido del nodo
             int datoi[]={data[1],data[0],data[2],data[3]}; //Intermcabio Izquierda
             int datoc[]={data[0],data[2],data[1],data[3]}; //Intercambio al centro
             int datod[]={data[0],data[1],data[3],data[2]}; //Intercambio a la derecha
@@ -107,6 +122,15 @@ public class BusquedaAmplitud {
             hijoCentral.setDatos(datoc);
             hijoDerecho.setDatos(datod);
 
+            if(!contiene(visitados, datoi))
+                nodos_no_expandidos.push(hijoIzquierdo); //ponemos los nodos a la pila
+
+            if(!contiene(visitados, datoc))
+                nodos_no_expandidos.push(hijoCentral);
+
+            if(!contiene(visitados, datod))
+                nodos_no_expandidos.push(hijoDerecho);
+
             ArrayList<Nodo> nhijos=new ArrayList<Nodo>();
             nhijos.add(hijoIzquierdo);
             nhijos.add(hijoCentral);
@@ -114,8 +138,8 @@ public class BusquedaAmplitud {
             nodo_inicial.setHijos(nhijos);
 
             for(Nodo nodoHijo: nodo_inicial.getHijos()){
-                if(!contiene(visitados,nodoHijo.getDatos()) && heuristica(nodo_inicial, nodoHijo)){
-                    Nodo sol = AlRecursivo_h(nodoHijo,solucion,visitados);
+                if(!contiene(visitados,nodoHijo.getDatos())&&heuristica(nodo_inicial,nodoHijo)){
+                    Nodo sol = metodo_recursivo_h(nodoHijo,solucion,visitados);
                     if(sol!=null){
                         return sol;
                     }
@@ -124,55 +148,12 @@ public class BusquedaAmplitud {
             return null;
         }
     }
-    public void AlRecursivo_h_m(Nodo nodo_inicial, int[] solucion, ArrayList visitados, int nivel) {
-
-        visitados.add(nodo_inicial.getDatos());
-
-        if(Arrays.equals(nodo_inicial.getDatos(), solucion)){
-            //return nodo_inicial;
-            if(!mejor_solucion.isEmpty()){
-                mejor_solucion.add(nodo_inicial);
-            }else{
-                /*if(mejor_solucion.get(0)>nivel){
-                    mejor_solucion.add(nivel);
-                    mejor_solucion.add(nodo_inicial);
-                }*/
-
-            }
-        }else{
-            int data[]=nodo_inicial.getDatos(); //Sacando el contenido del nodo
-            int datoi[]={data[1],data[0],data[2],data[3]}; //Intermcabio Izquierda
-            int datoc[]={data[0],data[2],data[1],data[3]}; //Intercambio al centro
-            int datod[]={data[0],data[1],data[3],data[2]}; //Intercambio a la derecha
-
-            Nodo hijoIzquierdo=new Nodo(); //Creando los objetos nodos
-            Nodo hijoCentral=new Nodo();
-            Nodo hijoDerecho=new Nodo();
-
-            hijoIzquierdo.setDatos(datoi); //ponemos los arrays a los nodos
-            hijoCentral.setDatos(datoc);
-            hijoDerecho.setDatos(datod);
-
-            ArrayList<Nodo> nhijos=new ArrayList<Nodo>();
-            nhijos.add(hijoIzquierdo);
-            nhijos.add(hijoCentral);
-            nhijos.add(hijoDerecho);
-            nodo_inicial.setHijos(nhijos);
-
-            for(Nodo nodoHijo: nodo_inicial.getHijos()){
-                if(!contiene(visitados,nodoHijo.getDatos()) && heuristica(nodo_inicial, nodoHijo)){
-                    AlRecursivo_h_m(nodoHijo,solucion,visitados, nivel+1);
-
-                }
-            }
-        }
-    }
 
 
-    public boolean contiene(ArrayList<int []> lista, int[] buscado){
-        for (int[] v: lista
-             ) {
-            if(Arrays.equals(v, buscado)){
+
+    public static boolean contiene(ArrayList<int[]> visitados, int[] buscado){
+        for(int[] v: visitados){
+            if(Arrays.equals(v,buscado)){
                 return true;
             }
         }
@@ -187,10 +168,10 @@ public class BusquedaAmplitud {
         //for (int i: dato_padre) {
         for(int i = 1; i < dato_padre.length; i++){
             if(dato_padre[i]>dato_padre[i-1]){
-                calidad_padre = calidad_padre + 1;
+                calidad_padre++;
             }
             if(dato_hijo[i]>dato_hijo[i-1]){
-                calidad_hijo = calidad_hijo + 1;
+                calidad_hijo++;
             }
         }
         if(calidad_hijo>=calidad_padre){
@@ -199,4 +180,5 @@ public class BusquedaAmplitud {
             return false;
         }
     }
+
 }
